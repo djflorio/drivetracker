@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drive Tracker</title>
+    <link rel="stylesheet" href="../assets/vendor/font-awesome/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+  </head>
+  <body>
+    <div class="add-window-container">
+      <ul class="connected-list" id="aw-list"></ul>
+      <div class="aw-bottom-buttons">
+        <span class="aw-button" id="aw-checkButton">
+          <i class="fa fa-check" aria-hidden="true"></i>
+        </span>
+        <span class="aw-button">
+          <i class="fa fa-ban" aria-hidden="true"></i>
+        </span>
+        <span class="aw-button">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+
+    <script>
+
+      const electron = require('electron');
+      const {ipcRenderer} = electron;
+      const dl = require('drivelist');
+      let selectedPath;
+
+      dl.list((error, drives) => {
+        if (error) {
+          throw error;
+        }
+
+        updateList(drives);
+      });
+
+      const checkButton = document.querySelector("#aw-checkButton");
+      checkButton.addEventListener("click", onCheckClick);
+
+      function updateList(drives) {
+        for (i = 0; i < drives.length; i++) {
+          if (!drives[i].system) {
+
+            let path = drives[i].mountpoints[0].path;
+            const parsedName = path.split("/").pop();
+            const nameNode = document.createTextNode(parsedName);
+
+            const drive = document.createElement('li');
+            drive.className = "connected-list__item";
+            const icon = document.createElement('i');
+            icon.className = "fa fa-hdd-o drive-list__item-icon";
+            const name = document.createElement('span');
+            name.className = "connected-list__item-name";
+
+            name.appendChild(nameNode);
+            drive.appendChild(icon);
+            drive.appendChild(name);
+            drive.addEventListener("click", function() {
+              selectedPath = path;
+              let allItems = document.querySelectorAll(".connected-list__item");
+              [].forEach.call(allItems, function(el) {
+                el.classList.remove("connected-list__item--selected");
+              });
+              this.classList.add("connected-list__item--selected");
+            });
+
+            const awl = document.querySelector("#aw-list");
+            awl.appendChild(drive);
+
+          }
+        }
+      }
+
+      function selectPath(path) {
+        selectedPath = path;
+        this.parentElement.classList.add("connected-list__item--selected");
+        //elem.classList.add("connected-list__item--selected");
+      }
+
+      function onCheckClick() {
+        if (selectedPath != null) {
+          //console.log(selectedPath);
+          ipcRenderer.send('addDrive', selectedPath);
+        } else {
+          // TODO: Display message to pick a drive.
+          console.log("NULL");
+        }
+      }
+
+    </script>
+
+  </body>
+</html>

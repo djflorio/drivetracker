@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drive Tracker</title>
+    <link rel="stylesheet" href="../assets/vendor/font-awesome/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
+  </head>
+  <body>
+
+    <div class="sidebar">
+      <input class="search-bar" id="search-name" placeholder="Search drive name..." type="text">
+      <input class="search-bar" id="search-files" placeholder="Search files and folders..." type="text">
+      <ul class="drive-list" id="m-drive-list"></ul>
+      <span class="add-button" id="add-button">
+        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;ADD DRIVE
+      </span>
+    </div>
+
+    <ul class="data-list" id="w-data-list"></ul>
+
+    <script>
+
+      const electron = require('electron');
+      const {ipcRenderer} = electron;
+
+      const addButton = document.querySelector('#add-button');
+      addButton.addEventListener("click", onAddButtonClick);
+
+      ipcRenderer.on('loadDrives', (e, drives) => {
+        const mDriveList = document.querySelector("#m-drive-list");
+        for (var i = 0; i < drives.length; i++) {
+
+          const drive = document.createElement('li');
+          drive.className = "drive-list__item";
+          const icon = document.createElement('i');
+          icon.className = "fa fa-hdd-o drive-list__item-icon";
+          const name = document.createElement('span');
+          name.className = "drive-list__item-name";
+          const nameText = document.createTextNode(drives[i]._doc.name);
+
+          name.appendChild(nameText);
+          drive.appendChild(icon);
+          drive.appendChild(name);
+
+          var data = drives[i]._doc.data;
+
+          drive.addEventListener('click', function() {
+            loadFiles(data);
+          });
+
+          mDriveList.appendChild(drive);
+        }
+      });
+
+      function loadFiles(data) {
+        const dataList = document.querySelector("#w-data-list");
+        dataList.innerHTML = "";
+        for (var i = 0; i < data.length; i++) {
+          const dataItem = document.createElement('li');
+          dataItem.className = "data-list__item";
+          const dataItemFile = document.createTextNode(data[i]._doc.file);
+          dataItem.appendChild(dataItemFile);
+          dataList.appendChild(dataItem);
+        }
+      }
+
+      function onAddButtonClick() {
+        ipcRenderer.send('addWindow:open');
+      }
+
+    </script>
+
+  </body>
+</html>

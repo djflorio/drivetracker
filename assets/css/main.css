@@ -1,0 +1,164 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.sidebar {
+  position: absolute;
+  background-color: #2a486d;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 170px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.data-list {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 170px;
+  background-color: black;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: scroll;
+}
+
+.data-list__item {
+  color: lime;
+  font-size: 11px;
+  margin: 3px 0;
+}
+
+.search-bar {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  border-style: none;
+  font-size: 10px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.drive-list {
+  position: absolute;
+  bottom: 38px;
+  right: 5px;
+  left: 5px;
+  top: 60px;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.drive-list__item {
+  padding: 3px;
+  font-size: 15px;
+  border-radius: 5px;
+}
+
+.drive-list__item:hover {
+  cursor: pointer;
+  background-color: #2a486d;
+  color: #f5f5f5;
+}
+
+.add-button {
+  display: inline-block;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 12px;
+  background-color: #f5f5f5;
+  border: solid 2px #f5f5f5;
+  color: #2a486d;
+
+}
+
+.add-button:hover {
+  cursor: pointer;
+  background-color: #2a486d;
+  color: #f5f5f5;
+}
+
+
+/***************
+ADD DRIVE WINDOW
+***************/
+
+
+.add-window-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2a486d;
+}
+
+.connected-list {
+  position: absolute;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  box-sizing: border-box;
+  top: 5px;
+  left: 5px;
+  bottom: 34px;
+  right: 5px;
+}
+
+.connected-list__item {
+  padding: 3px;
+  border-radius: 5px;
+}
+
+.connected-list__item:hover,
+.connected-list__item--selected {
+  cursor: pointer;
+  background-color: #2a486d;
+  color: white;
+}
+
+.connected-list__item-name {
+  margin-left: 5px;
+}
+
+.aw-bottom-buttons {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+}
+
+.aw-button {
+  display: inline-block;
+  background-color: #f5f5f5;
+  padding: 3px;
+  border: solid #f5f5f5 2px;
+  border-radius: 5px;
+  color: #2a486d;
+  font-size: 12px;
+  width: 30px;
+  text-align: center;
+}
+
+.aw-button:hover {
+  cursor: pointer;
+  background-color: #2a486d;
+  color: #f5f5f5;
+}
+
+
+.drive-list__item-name {
+  margin-left: 5px;
+}
