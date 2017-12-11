@@ -17,7 +17,8 @@
       </span>
     </div>
 
-    <ul class="data-list" id="w-data-list"></ul>
+    <!--<ul class="data-list" id="w-data-list"></ul>-->
+    <div class="data-tree" id="w-data-tree"></div>
 
     <script>
 
@@ -27,7 +28,8 @@
       const addButton = document.querySelector('#add-button');
       addButton.addEventListener("click", onAddButtonClick);
 
-      ipcRenderer.on('loadDrives', (e, drives) => {
+      ipcRenderer.on('loadDriveList', (e, drives) => {
+        drives = JSON.parse(drives);
         const mDriveList = document.querySelector("#m-drive-list");
         for (var i = 0; i < drives.length; i++) {
 
@@ -37,24 +39,45 @@
           icon.className = "fa fa-hdd-o drive-list__item-icon";
           const name = document.createElement('span');
           name.className = "drive-list__item-name";
-          const nameText = document.createTextNode(drives[i]._doc.name);
+          const nameText = document.createTextNode(drives[i].name);
 
           name.appendChild(nameText);
           drive.appendChild(icon);
           drive.appendChild(name);
-
-          var data = drives[i]._doc.data;
+          drive.setAttribute('data-id', drives[i]._id);
 
           drive.addEventListener('click', function() {
-            loadFiles(data);
+            getFiles(this.getAttribute('data-id'));
           });
 
           mDriveList.appendChild(drive);
         }
       });
 
+      ipcRenderer.on('loadDriveContents', (e, drive) => {
+        drive = JSON.parse(drive);
+
+        const dataTree = document.querySelector("#w-data-tree");
+        dataTree.innerText = drive.data;
+        console.log(drive.data);
+
+        /*const dataList = document.querySelector("#w-data-list");
+        dataList.innerHTML = "";
+        for (var i = 0; i < drive.data.length; i++) {
+          const dataItem = document.createElement('li');
+          dataItem.className = "data-list__item";
+          const dataItemFile = document.createTextNode(drive.data[i].file);
+          dataItem.appendChild(dataItemFile);
+          dataList.appendChild(dataItem);
+        }*/
+      });
+
+      function getFiles(id) {
+        ipcRenderer.send('getFiles', id);
+      }
+
       function loadFiles(data) {
-        const dataList = document.querySelector("#w-data-list");
+        /*const dataList = document.querySelector("#w-data-list");
         dataList.innerHTML = "";
         for (var i = 0; i < data.length; i++) {
           const dataItem = document.createElement('li');
@@ -62,7 +85,7 @@
           const dataItemFile = document.createTextNode(data[i]._doc.file);
           dataItem.appendChild(dataItemFile);
           dataList.appendChild(dataItem);
-        }
+        }*/
       }
 
       function onAddButtonClick() {

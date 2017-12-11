@@ -1,7 +1,7 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
-const dirTree = require('directory-tree');
+const dirTree = require('dir-tree-creator');
 const mongoose = require('mongoose');
 const { app, BrowserWindow, ipcMain } = electron;
 
@@ -16,18 +16,38 @@ db.once('open', function() { console.log("connected"); });
 const driveSchema = mongoose.Schema({
   name: String,
   notes: String,
-  data: [{ file: String, created: String }]
+  lastUpdated: String,
+  data: String
 });
 const Drive = mongoose.model('Drive', driveSchema);
 
 const walk = require('walk');
+
+addDrive('/Volumes/UNTITLED');
 
 function addDrive(drive) {
   const files = [];
   const walker = walk.walk(drive, { followLinks: false });
   const driveName = drive.split('/').pop();
   console.log("LOADING...");
-  walker.on('file', function(root, stat, next) {
+
+  dirTree(drive, { hidden: false }, (err, tr) => {
+    // TODO: Better error handling.
+    if (err) return console.error(err);
+    const newDrive = new Drive({
+      name: driveName,
+      notes: "",
+      lastUpdated: "",
+      data: tr
+    });
+    newDrive.save(function (err, newDrive) {
+      // TODO: Better error handling.
+      if (err) return console.error(err);
+      console.log("DONE");
+    });
+  });
+
+  /*walker.on('file', function(root, stat, next) {
     files.push({
       file: root + '/' + stat.name,
       created: stat.ctime
@@ -44,8 +64,10 @@ function addDrive(drive) {
       if (err) return console.error(err);
       console.log("DONE!");
     });
-  });
+  });*/
 }
+
+
 
 //addDrive('/Volumes/onslot_2');
 
@@ -63,10 +85,10 @@ app.on('ready', function() {
   }));
 
   mainWindow.webContents.on('did-finish-load', () => {
-    Drive.find({}, function (err, drives) {
+    Drive.find({}, 'name id',function(err, drives) {
       // TODO: Better error handling.
       if (err) return console.error(err);
-      mainWindow.webContents.send('loadDrives', drives);
+      mainWindow.webContents.send('loadDriveList', JSON.stringify(drives));
     });
   });
 
@@ -84,9 +106,15 @@ ipcMain.on('addWindow:open', function() {
 });
 
 ipcMain.on('addDrive', function(e, pathname) {
-  const tree = dirTree(pathname);
-  console.log(tree);
   addWindow.close();
+});
+
+ipcMain.on('getFiles', function(e, id) {
+  Drive.findOne({ '_id': id }, function(err, drive) {
+    // TODO: Handle error better.
+    if (err) return console.error(err);
+    mainWindow.webContents.send('loadDriveContents', JSON.stringify(drive));
+  });
 });
 
 // Handle create add window.
